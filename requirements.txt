@@ -1,3 +1,4 @@
 requests==2.22.0
 lxml==4.5.2
 telethon==1.16.4
+pyttsx3==2.90.0

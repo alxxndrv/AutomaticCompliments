@@ -8,7 +8,7 @@ try:  # Обрабатываем все возможные ошибки
     from functools import partial
     import multiprocessing as mp
     import requests, random, sys, traceback, re
-
+    import pyttsx3
 
     def scrabThePage(page_number, return_dict):  # Функции скрабинга комплиментов со страницы сайта с комплиментами
         print('https://datki.net/komplimenti/zhenshine/page/' + str(
@@ -20,12 +20,10 @@ try:  # Обрабатываем все возможные ошибки
         return_dict[page_number] = (tree.xpath('//a[@class="post-copy btn"]/@data-clipboard-text'))
 
 
-    def message(internal_compliments, internal_api_id, internal_api_hash):  # Функция отправки сообщения
+    def message(rand_compl, internal_api_id, internal_api_hash):  # Функция отправки сообщения
         # Инициализируем подключение
         internal_client = TelegramClient('Compliments', internal_api_id, internal_api_hash)  # Задаем параметры клиента
         internal_client.start()  # Подключаемся
-        rand_compl = random.choice(
-            internal_compliments)  # Выбираем случайный комплимент из списка отфильтрованных по длине комплиментов
         internal_client.send_message(sendToUsername, rand_compl)  # Отправляем комплимент адресату
         internal_client.disconnect()  # Отключаемся после отправки сообщения
         print('ОТПРАВЛЕН КОМПЛИМЕНТ: ' + str(rand_compl))  # Сообщаем в
@@ -124,10 +122,19 @@ try:  # Обрабатываем все возможные ошибки
                 # Далее переход в начало цикла, а далее - снова ввод нового значения, если ни один подходящий по длине  комплимент не был найден, либо продолжение программы, если хотя бы один подходящий по длине комплимент был найден
 
         print('Ожидание нажатия кнопки...', end='\n\n')  # Сообщаем об ожидании нажатия кнопки
+        engine = pyttsx3.init() # Инициализируем движок текст-в-речь
+        engine.setProperty('voice', 'com.apple.speech.synthesis.voice.yuri') # Ставим мужской голос
+        engine.setProperty('rate', 250) # Ставим скорость озвучки
 
         while True:  # Бесконечный цикл...
             input()  # При нажатии кнопки...
-            message(compliments, api_id, api_hash)  # Отправляем комплимент с нашего аккаунта в телеграме
+            rand_compl = random.choice(
+            compliments)  # Выбираем случайный комплимент из списка отфильтрованных по длине комплиментов
+            engine.say("Отправлен комплимент: {}".format(rand_compl)) # Настраиваем фразу для движка
+            message(rand_compl, api_id, api_hash)  # Отправляем комплимент с нашего аккаунта в телеграме
+            engine.say("Нажмите кнопку еще раз, чтобы отправить еще один комплимент") # Настраиваем фразу для движка
+            engine.runAndWait() # Озвучиваем
+
 
 except KeyboardInterrupt:  # Исключение при становке пользователем
     print(
