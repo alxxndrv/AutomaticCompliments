@@ -125,6 +125,8 @@ try:  # Обрабатываем все возможные ошибки
         engine = pyttsx3.init() # Инициализируем движок текст-в-речь
         engine.setProperty('voice', 'com.apple.speech.synthesis.voice.yuri') # Ставим мужской голос
         engine.setProperty('rate', 250) # Ставим скорость озвучки
+        engine.say("Ожидание нажатия кнопки...") # Настраиваем фразу для движка
+        engine.runAndWait() # Озвучиваем
 
         while True:  # Бесконечный цикл...
             input()  # При нажатии кнопки...
